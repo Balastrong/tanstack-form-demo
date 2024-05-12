@@ -65,8 +65,7 @@ export const SignUp = () => {
           <form.Field
             name="password"
             validators={{
-              onChangeAsyncDebounceMs: 500,
-              onChangeAsync: ({ value }) => {
+              onChange: ({ value }) => {
                 if (value.length < 6) {
                   return "Password must be at least 6 characters long";
                 }
