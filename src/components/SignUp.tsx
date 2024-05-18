@@ -10,12 +10,29 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useForm } from "@tanstack/react-form";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { AlertCircle, LoaderCircle } from "lucide-react";
+import { validateUsername } from "@/api/user";
+import { zodValidator } from "@tanstack/zod-form-adapter";
+import { z } from "zod";
+
+const UsernameSchema = z
+  .string()
+  .min(3, "Username must be at least 3 characters!!!");
 
 export const SignUp = () => {
   const form = useForm({
     defaultValues: {
       username: "",
       password: "",
+      confirmPassword: "",
+    },
+    validators: {
+      onSubmit: ({ value }) => {
+        if (!value.username || !value.password) {
+          return "Please fill in all fields";
+        }
+      },
     },
     onSubmit: ({ value }) => {
       console.log(value);
@@ -39,21 +56,28 @@ export const SignUp = () => {
         >
           <form.Field
             name="username"
+            validatorAdapter={zodValidator}
             validators={{
               onChangeAsyncDebounceMs: 500,
-              onChangeAsync: ({ value }) =>
-                value.length < 3 &&
-                "Username must be at least 3 characters long",
+              onChangeAsync: ({ value }) => validateUsername(value),
+              onChange: UsernameSchema,
             }}
             children={(field) => (
               <div>
                 <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={field.state.value}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                />
+                <div className="relative">
+                  <Input
+                    id="username"
+                    type="text"
+                    value={field.state.value}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                  />
+                  {field.getMeta().isValidating && (
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                      <LoaderCircle className="animate-spin" />
+                    </div>
+                  )}
+                </div>
                 {field.state.meta.errors && (
                   <div className="text-red-500 text-sm mt-1">
                     {field.state.meta.errors}
@@ -100,13 +124,60 @@ export const SignUp = () => {
               </div>
             )}
           />
+          <form.Field
+            name="confirmPassword"
+            validators={{
+              onChangeListenTo: ["password"],
+              onChange: ({ value, fieldApi }) =>
+                value !== fieldApi.form.getFieldValue("password") &&
+                "Passwords do not match",
+            }}
+            children={(field) => (
+              <div>
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={field.state.value}
+                  onChange={(e) => field.handleChange(e.target.value)}
+                />
+                {field.state.meta.errors && (
+                  <div className="text-red-500 text-sm mt-1">
+                    {field.state.meta.errors}
+                  </div>
+                )}
+              </div>
+            )}
+          />
+          <form.Subscribe
+            selector={(state) => state.errors}
+            children={(errors) =>
+              errors.length > 0 && (
+                <Alert variant={"destructive"}>
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Error</AlertTitle>
+                  <AlertDescription>{errors}</AlertDescription>
+                </Alert>
+              )
+            }
+          />
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
         <Button variant="outline" onClick={form.reset}>
           Reset
         </Button>
-        <Button onClick={form.handleSubmit}>Sign Up</Button>
+        <form.Subscribe
+          selector={(state) => [state.canSubmit, state.isValidating]}
+          children={([canSubmit, isValidating]) => (
+            <Button
+              onClick={form.handleSubmit}
+              disabled={!canSubmit || isValidating}
+            >
+              Sign Up
+            </Button>
+          )}
+        />
       </CardFooter>
     </Card>
   );
