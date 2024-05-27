@@ -11,10 +11,17 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { useForm } from "@tanstack/react-form";
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
-import { AlertCircle, LoaderCircle } from "lucide-react";
+import { AlertCircle, LoaderCircle, X } from "lucide-react";
 import { validateUsername } from "@/api/user";
 import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 const UsernameSchema = z
   .string()
@@ -26,6 +33,8 @@ export const SignUp = () => {
       username: "",
       password: "",
       confirmPassword: "",
+      interests: [] as string[],
+      skills: [] as { language: string; rating: number }[],
     },
     validators: {
       onSubmit: ({ value }) => {
@@ -149,6 +158,117 @@ export const SignUp = () => {
               </div>
             )}
           />
+          <div>
+            <form.Field
+              name="interests"
+              mode="array"
+              children={(field) => (
+                <>
+                  <Label className="mr-2">Interests</Label>
+                  {field.state.value.map((_, index) => (
+                    <div key={index} className="flex gap-2 my-2">
+                      <Select
+                        value={`${index}`}
+                        onValueChange={(newIndex) =>
+                          field.moveValue(index, +newIndex)
+                        }
+                      >
+                        <SelectTrigger className="w-28">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {field.state.value.map((_, index) => (
+                            <SelectItem key={index} value={`${index}`}>
+                              # {index + 1}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <form.Field
+                        name={`interests[${index}]`}
+                        children={(subField) => (
+                          <Input
+                            type="text"
+                            value={subField.state.value}
+                            autoFocus
+                            onChange={(e) =>
+                              subField.handleChange(e.target.value)
+                            }
+                          />
+                        )}
+                      />
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => field.removeValue(index)}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant={"outline"}
+                    onClick={() => field.pushValue("")}
+                  >
+                    Add
+                  </Button>
+                </>
+              )}
+            />
+          </div>
+          <div>
+            <form.Field
+              name="skills"
+              mode="array"
+              children={(field) => (
+                <>
+                  <Label className="mr-2">Skills</Label>
+                  {field.state.value.map((_, index) => (
+                    <div key={index} className="flex gap-2 my-2">
+                      <form.Field
+                        name={`skills[${index}].language`}
+                        children={(subField) => (
+                          <Input
+                            type="text"
+                            value={subField.state.value}
+                            autoFocus
+                            onChange={(e) =>
+                              subField.handleChange(e.target.value)
+                            }
+                          />
+                        )}
+                      />
+                      <form.Field
+                        name={`skills[${index}].rating`}
+                        children={(subField) => (
+                          <Input
+                            type="number"
+                            value={subField.state.value}
+                            onChange={(e) =>
+                              subField.handleChange(e.target.valueAsNumber)
+                            }
+                          />
+                        )}
+                      />
+                      <Button
+                        variant={"destructive"}
+                        onClick={() => field.removeValue(index)}
+                      >
+                        <X />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant={"outline"}
+                    onClick={() => field.pushValue({ language: "", rating: 0 })}
+                  >
+                    Add
+                  </Button>
+                </>
+              )}
+            />
+          </div>
           <form.Subscribe
             selector={(state) => state.errors}
             children={(errors) =>
@@ -166,6 +286,12 @@ export const SignUp = () => {
       <CardFooter className="flex justify-between">
         <Button variant="outline" onClick={form.reset}>
           Reset
+        </Button>
+        <Button
+          variant={"ghost"}
+          onClick={() => console.log(form.state.values)}
+        >
+          Debug
         </Button>
         <form.Subscribe
           selector={(state) => [state.canSubmit, state.isValidating]}
