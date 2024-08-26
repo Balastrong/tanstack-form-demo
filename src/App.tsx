@@ -1,5 +1,6 @@
-import { SignUp } from "@/components/SignUp";
+// import { SignUp } from "@/components/SignUp";
 import Typography from "./components/ui/typography";
+import { ReactiveForm } from "./components/ReactiveForm";
 
 function App() {
   return (
@@ -10,7 +11,8 @@ function App() {
       >
         TanStack Form Tutorial
       </Typography>
-      <SignUp />
+      {/* <SignUp /> */}
+      <ReactiveForm />
     </div>
   );
 }
