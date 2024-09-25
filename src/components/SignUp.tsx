@@ -65,7 +65,7 @@ export const SignUp = () => {
         >
           <form.Field
             name="username"
-            validatorAdapter={zodValidator}
+            validatorAdapter={zodValidator()}
             validators={{
               onChangeAsyncDebounceMs: 500,
               onChangeAsync: ({ value }) => validateUsername(value),
