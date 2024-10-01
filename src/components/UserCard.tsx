@@ -8,11 +8,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FieldMeta, useForm } from "@tanstack/react-form";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { X } from "lucide-react";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { ZodValidator, zodValidator } from "@tanstack/zod-form-adapter";
 
 const UserSchema = z.object({
   name: z
@@ -34,12 +34,14 @@ const UserSchema = z.object({
     .min(1, "At least one skill is required"),
 });
 
+type User = z.infer<typeof UserSchema>;
+
 export const UserCard = () => {
-  const form = useForm({
+  const form = useForm<User, ZodValidator>({
     defaultValues: {
       name: "",
       surname: "",
-      interests: [] as { name: string; score: number }[],
+      interests: [],
     },
     validators: {
       onChange: UserSchema,
@@ -140,9 +142,15 @@ export const UserCard = () => {
                         <X />
                       </Button>
                     </div>
+                    <form.Subscribe
+                      selector={(f) => f.fieldMeta[`interests[${index}].name`]}
+                      children={(fieldMeta) => (
+                        <FieldInfo fieldMeta={fieldMeta} />
+                      )}
+                    />
                   </div>
                 ))}
-
+                <FieldInfo fieldMeta={field.state.meta} />
                 <Button
                   type="button"
                   variant={"outline"}
