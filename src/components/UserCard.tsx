@@ -164,7 +164,7 @@ export const UserCard = () => {
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button onClick={form.reset} variant="destructive">
+        <Button onClick={() => form.reset()} variant="destructive">
           Reset
         </Button>
         <Button onClick={form.handleSubmit}>Save</Button>

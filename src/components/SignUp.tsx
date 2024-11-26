@@ -284,7 +284,7 @@ export const SignUp = () => {
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button variant="outline" onClick={form.reset}>
+        <Button variant="outline" onClick={() => form.reset()}>
           Reset
         </Button>
         <Button
