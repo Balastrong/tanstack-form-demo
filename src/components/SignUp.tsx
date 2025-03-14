@@ -1,3 +1,4 @@
+import { validateUsername } from "@/api/user";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -7,14 +8,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
 import { useForm } from "@tanstack/react-form";
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
 import { AlertCircle, LoaderCircle, X } from "lucide-react";
-import { validateUsername } from "@/api/user";
-import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert";
+import { Input } from "./ui/input";
+import { Label } from "./ui/label";
 import {
   Select,
   SelectContent,
@@ -65,7 +64,6 @@ export const SignUp = () => {
         >
           <form.Field
             name="username"
-            validatorAdapter={zodValidator()}
             validators={{
               onChangeAsyncDebounceMs: 500,
               onChangeAsync: ({ value }) => validateUsername(value),
@@ -88,9 +86,11 @@ export const SignUp = () => {
                   )}
                 </div>
                 {field.state.meta.errors && (
-                  <div className="text-red-500 text-sm mt-1">
-                    {field.state.meta.errors}
-                  </div>
+                  <p className="text-destructive text-sm mt-1">
+                    {field.state.meta.errors.map((e) =>
+                      typeof e === "object" ? e.message : e
+                    )}
+                  </p>
                 )}
               </div>
             )}

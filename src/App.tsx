@@ -1,6 +1,7 @@
 // import { SignUp } from "@/components/SignUp";
-import { Listeners } from "./components/Listeners";
+// import { Listeners } from "./components/Listeners";
 import Typography from "./components/ui/typography";
+import { UserForm } from "./components/UserForm";
 // import { UserCard } from "./components/UserCard";
 // import { ReactiveForm } from "./components/ReactiveForm";
 
@@ -16,7 +17,8 @@ function App() {
       {/* <SignUp /> */}
       {/* <ReactiveForm /> */}
       {/* <UserCard /> */}
-      <Listeners />
+      {/* <Listeners /> */}
+      <UserForm />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useForm } from "@tanstack/react-form";
+import { useForm, useStore } from "@tanstack/react-form";
 import { Button } from "./ui/button";
 import {
   Card,
@@ -58,8 +58,7 @@ const ListenersForm = ({
     onSubmit: ({ value }) => console.log(value),
   });
 
-  const region = form.useStore((state) => state.values.region);
-  // const region = useStore(form.store, (state) => state.values.region); // Might become like this in the future
+  const region = useStore(form.store, (state) => state.values.region);
 
   return (
     <>

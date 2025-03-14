@@ -7,12 +7,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FieldMeta, useForm } from "@tanstack/react-form";
+import { AnyFieldMeta, useForm } from "@tanstack/react-form";
 import { X } from "lucide-react";
 import { z } from "zod";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
-import { ZodValidator, zodValidator } from "@tanstack/zod-form-adapter";
 
 const UserSchema = z.object({
   name: z
@@ -37,16 +36,15 @@ const UserSchema = z.object({
 type User = z.infer<typeof UserSchema>;
 
 export const UserCard = () => {
-  const form = useForm<User, ZodValidator>({
+  const form = useForm({
     defaultValues: {
       name: "",
       surname: "",
       interests: [],
-    },
+    } as User,
     validators: {
-      onChange: UserSchema,
+      onChangeAsync: UserSchema,
     },
-    validatorAdapter: zodValidator(),
     onSubmit: ({ value }) => console.log(value),
   });
 
@@ -173,7 +171,7 @@ export const UserCard = () => {
   );
 };
 
-function FieldInfo({ fieldMeta }: { fieldMeta: FieldMeta | undefined }) {
+function FieldInfo({ fieldMeta }: { fieldMeta: AnyFieldMeta | undefined }) {
   if (!fieldMeta) return null;
 
   return (
@@ -183,7 +181,6 @@ function FieldInfo({ fieldMeta }: { fieldMeta: FieldMeta | undefined }) {
           {fieldMeta.errors.join(",")}
         </p>
       ) : null}
-      {fieldMeta.isValidating ? "Validating..." : null}
     </>
   );
 }
